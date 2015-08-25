@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo 'FreeTDS'
+exit 0
