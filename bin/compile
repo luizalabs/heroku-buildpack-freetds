@@ -1,44 +1,41 @@
-#!/usr/bin/env ruby
-# frozen_string_literal: true
+#!/bin/bash
+set -euo pipefail
 
-# sync output
-$stdout.sync = true
+build_dir=$1
+cache_dir=$2
+env_dir=${3:-""}
 
-BUILD_DIR = ARGV[0]
-CACHE_DIR = ARGV[1]
-ENV_DIR = ARGV[2]
+if [ -f "${env_dir}/FREETDS_SOURCE_URL" ]; then
+  source_url=$(cat "${env_dir}/FREETDS_SOURCE_URL")
+else
+  source_url="ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.tar.gz"
+fi
 
-source_url_filename = File.join(ENV_DIR, 'FREETDS_SOURCE_URL')
-SOURCE_URL =
-  if File.exist?(source_url_filename)
-    File.read(source_url_filename).strip
-  else
-    'ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.tar.gz'
-  end
+echo "-----> FreeTDS building in ${build_dir}"
 
-puts "-----> FreeTDS building in #{BUILD_DIR}"
+echo '-----> Fetching & Extracting FreeTDS'
+mkdir -p "${cache_dir}"
+curl "${source_url}" --silent -o - | tar -xz -C "${cache_dir}" -f - --strip-components=1
+ls -al $cache_dir
 
-puts '-----> Fetching & Extracting FreeTDS'
-puts `mkdir -p #{CACHE_DIR}`
-puts `curl #{SOURCE_URL} -o - | tar -xz -C #{CACHE_DIR} -f - --strip-components=1`
-puts `ls -al #{CACHE_DIR}`
+echo '-----> Configurating FreeTDS'
+mkdir -p "${build_dir}/vendor/freetds"
+pushd "${cache_dir}"
+./configure "--prefix=${build_dir}/vendor/freetds" --with-libiconv-prefix=DIR --with-openssl=DIR --with-tdsver=7.3
 
-puts '-----> Configurating FreeTDS'
-puts `mkdir -p #{BUILD_DIR}/vendor/freetds`
-puts `cd #{CACHE_DIR} && ./configure --prefix=#{BUILD_DIR}/vendor/freetds --with-libiconv-prefix=DIR --with-openssl=DIR --with-tdsver=7.3`
+echo '-----> Building FreeTDS'
+make
 
-puts '-----> Building FreeTDS'
-puts `cd #{CACHE_DIR}/freetds-* && make`
+echo "-----> Installing FreeTDS into ${build_dir}/vendor/freetds"
+mkdir -p "${build_dir}/vendor/freetds"
+make install
 
-puts "-----> Installing FreeTDS into #{BUILD_DIR}/vendor/freetds"
-puts `mkdir -p #{BUILD_DIR}/vendor/freetds`
-puts `cd #{CACHE_DIR} && make install`
+echo '-----> Copying FreeTDS into /app/vendor/freetds'
+cp -r "${build_dir}/vendor/freetds" /app/vendor/freetds
 
-puts '-----> Copying FreeTDS into /app/vendor/freetds'
-puts `cp -r #{BUILD_DIR}/vendor/freetds /app/vendor/freetds`
-
-puts '-----> Writing FreeTDS configuration for subsequent buildpack'
-
-File.open('export', 'a') do |file|
-  file.write('export FREETDS_DIR=/app/vendor/freetds')
-end
+echo '-----> Writing FreeTDS configuration for subsequent buildpack'
+mkdir -p "${build_dir}/.profile.d"
+cat <<-EOF >> "${build_dir}/.profile.d/freetds.sh"
+export FREETDS_DIR=/app/vendor/freetds
+EOF
+echo /app/vendor/freetds > "${env_dir}/FREETDS_DIR"

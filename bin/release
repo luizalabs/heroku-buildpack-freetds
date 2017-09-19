@@ -1,4 +1,7 @@
 #!/bin/sh
 
-echo 'FreeTDS'
-exit 0
+cat <<-YAML
+---
+addons: {}
+default_process_types: {}
+YAML
