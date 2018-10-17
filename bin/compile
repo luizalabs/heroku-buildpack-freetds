@@ -31,7 +31,8 @@ mkdir -p "${build_dir}/vendor/freetds"
 make install
 
 echo '-----> Copying FreeTDS into /app/vendor/freetds'
-ls -la /app/vendor
+ls -la /app
+
 cp -r "${build_dir}/vendor/freetds" /app/vendor/freetds
 
 echo '-----> Writing FreeTDS configuration for subsequent buildpack'
