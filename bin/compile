@@ -40,12 +40,12 @@ export FREETDS_DIR=/app/vendor/freetds
 EOF
 echo /app/vendor/freetds > "${env_dir}/FREETDS_DIR"
 
-mkdir -p $BUILD_DIR/.odbc
+mkdir -p $build_dir/.odbc
 
 echo "[FreeTDS]
 Description=FreeTDS Driver
 Driver=/app/.apt/usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
 Setup=/app/.apt/usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
-" > $BUILD_DIR/.odbc/odbcinst.ini
+" > $build_dir/.odbc/odbcinst.ini
 
-export ODBCSYSINI=$BUILD_DIR/.odbc
+export ODBCSYSINI=$build_dir/.odbc
