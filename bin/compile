@@ -31,13 +31,12 @@ mkdir -p "${build_dir}/vendor/freetds"
 make install
 
 echo '-----> Copying FreeTDS into /app/vendor/freetds'
-ls -la /app
+cp -r "${build_dir}/vendor/freetds" /app/vendor/freetds
+ls -la /app/vendor
 
-# cp -r "${build_dir}/vendor/freetds" /app/vendor/freetds
-
-# echo '-----> Writing FreeTDS configuration for subsequent buildpack'
-# mkdir -p "${build_dir}/.profile.d"
-# cat <<-EOF >> "${build_dir}/.profile.d/freetds.sh"
-# export FREETDS_DIR=/app/vendor/freetds
-# EOF
-# echo /app/vendor/freetds > "${env_dir}/FREETDS_DIR"
+echo '-----> Writing FreeTDS configuration for subsequent buildpack'
+mkdir -p "${build_dir}/.profile.d"
+cat <<-EOF >> "${build_dir}/.profile.d/freetds.sh"
+export FREETDS_DIR=/app/vendor/freetds
+EOF
+echo /app/vendor/freetds > "${env_dir}/FREETDS_DIR"
