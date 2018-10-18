@@ -39,15 +39,3 @@ cat <<-EOF >> "${build_dir}/.profile.d/freetds.sh"
 export FREETDS_DIR=/app/vendor/freetds
 EOF
 echo /app/vendor/freetds > "${env_dir}/FREETDS_DIR"
-
-rm -f /app/.apt/usr/share/tdsodbc/odbcinst.ini 
-
-echo '-----> Writing odbcinst.ini'
-echo "[FreeTDS]
-Description=FreeTDS Driver
-Driver=/app/vendor/freetds/lib/libtdsodbc.so.0.0.0
-Setup=/app/vendor/freetds/lib/libtdsodbc.so.0.0.0
-UsageCount=1
-" > /app/.apt/usr/share/tdsodbc/odbcinst.ini || true
-
-cat /app/.apt/usr/share/tdsodbc/odbcinst.ini
