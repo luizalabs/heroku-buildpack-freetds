@@ -1,51 +1,13 @@
 #!/bin/bash
-set -euo pipefail
 
 build_dir=$1
-cache_dir=$2
-env_dir=${3:-""}
-
-if [ -f "${env_dir}/FREETDS_SOURCE_URL" ]; then
-  source_url=$(cat "${env_dir}/FREETDS_SOURCE_URL")
-else
-  source_url="ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.tar.gz"
-fi
-
-echo "-----> FreeTDS building in ${build_dir}"
-
-echo '-----> Fetching & Extracting FreeTDS'
-mkdir -p "${cache_dir}"
-curl "${source_url}" --silent -o - | tar -xz -C "${cache_dir}" -f - --strip-components=1
-ls -al $cache_dir
-
-echo '-----> Configurating FreeTDS'
-mkdir -p "${build_dir}/vendor/freetds"
-pushd "${cache_dir}"
-./configure "--prefix=${build_dir}/vendor/freetds" --with-libiconv-prefix=DIR --with-openssl=DIR --with-tdsver=7.3
-
-echo '-----> Building FreeTDS'
-make
-
-echo "-----> Installing FreeTDS into ${build_dir}/vendor/freetds"
-mkdir -p "${build_dir}/vendor/freetds"
-make install
-
-echo '-----> Copying FreeTDS into /app/vendor/freetds'
-cp -r "${build_dir}/vendor/freetds" /app/vendor/freetds
-
-echo '-----> Writing FreeTDS configuration for subsequent buildpack'
-mkdir -p "${build_dir}/.profile.d"
-cat <<-EOF >> "${build_dir}/.profile.d/freetds.sh"
-export FREETDS_DIR=/app/vendor/freetds
-EOF
-echo /app/vendor/freetds > "${env_dir}/FREETDS_DIR"
-
 mkdir -p $build_dir/.odbc
+
+ls -la /app/.apt/usr/lib/x86_64-linux-gnu/odbc/
 
 echo "[FreeTDS]
 Description=FreeTDS Driver
 Driver=/app/.apt/usr/lib/x86_64-linux-gnu/odbc/libtdsodbc.so
-Setup=/app/.apt/usr/lib/x86_64-linux-gnu/odbc/libtdsS.so
 " > $build_dir/.odbc/odbcinst.ini
 
 export ODBCSYSINI=$build_dir/.odbc
