@@ -47,6 +47,6 @@ echo /app/vendor/freetds > "${env_dir}/FREETDS_DIR"
 # Description=FreeTDS Driver
 # Driver=/app/vendor/freetds/lib/libtdsodbc.so
 # " > /app/.apt/usr/share/tdsodbc/odbcinst.ini
-ls -la /app/.apt/usr/share/
+ls -la /app/
 
 # export ODBCSYSINI=$build_dir/.odbc
