@@ -9,7 +9,7 @@ Compatible with Heroku-12 stage.
 Installation
 ----------------------
 ```bash
-heroku buildpacks:add --index 1 https://github.com/codeforamerica/heroku-buildpack-freetds.git
+heroku buildpacks:add --index 1 https://github.com/maikomjames/heroku-buildpack-freetds.git
 ```
 
 Configuration
