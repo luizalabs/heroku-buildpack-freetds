@@ -17,4 +17,4 @@ Configuration
 This buildpack will read the value of one configuration variable:
 
 * **`FREETDS_SOURCE_URL`** - Path to a version of FreeTDS to install. Defaults to
-    `ftp://ftp.freetds.org/pub/freetds/stable/freetds-1.00.tar.gz`
+    `https://www.freetds.org/files/stable/freetds-1.00.1.tar.gz`
